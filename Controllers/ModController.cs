@@ -14,46 +14,6 @@ public class ModController : ControllerBase
         return await Mod.GetMod(id);
     }
 
-    [HttpGet(template: "Rate/{id}")]
-    public async Task<RatingRequestResponse> RateMod(int id, int rating)
-    {
-        Mod mod = await Mod.GetMod(id);
-
-        var remoteIpAddress = Request.HttpContext.Connection.RemoteIpAddress!.ToString();
-
-        if (mod is not null && mod.Id > -1)
-        {
-            Trace.WriteLine($"ID: {id}, Rating: {rating}");
-
-            if (await ModDb.CheckExistingIp(id, remoteIpAddress))
-            {
-                return new RatingRequestResponse()
-                {
-                    Result = "Fail",
-                    Reason = "You have already rated this mod"
-                };
-            }
-
-            if (rating > -1 && rating < 6)
-            {
-                await ModDb.AddRating(id, rating, remoteIpAddress);
-                return new RatingRequestResponse() { Result = "Success" };
-            }
-
-            return new RatingRequestResponse()
-            {
-                Result = "Fail",
-                Reason = "Invalid rating value supplied."
-            };
-        }
-
-        return new RatingRequestResponse()
-        {
-            Result = "Fail",
-            Reason = "Mod ID does not exist."
-        };
-    }
-
     [HttpGet(template: "Install/{id}")]
     public async Task<InstallRequestResponse> InstallMod(int id)
     {

@@ -1,18 +1,12 @@
 using Serilog;
 using SWGEmuModManagerApi.Models;
 
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .WriteTo.File(path: "log-.txt", fileSizeLimitBytes: null, rollingInterval: RollingInterval.Day)
-    .CreateBootstrapLogger();
-
 try
 {
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Host.UseSerilog(configureLogger: (hostBuilderContext, loggerConfiguration) => loggerConfiguration
         .WriteTo.Console()
-        .WriteTo.File(path: "log-.txt", fileSizeLimitBytes: null, rollingInterval: RollingInterval.Day)
         .ReadFrom.Configuration(hostBuilderContext.Configuration));
 
     builder.Services.AddControllers();

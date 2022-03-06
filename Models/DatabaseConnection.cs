@@ -59,11 +59,8 @@ public static class DatabaseConnection
 
             if (modDb is not null && modDb.Count < 1)
             {
-                await ExecuteModDbAsync(data: "INSERT INTO ModDb (Id, Downloads, Rating1, Rating2, Rating3, Rating4, Rating5, Ratings) " +
-                                              "VALUES " +
-                                              $"('{mod.Id}', '{mod.Downloads}', '{mod.Rating1}'" +
-                                              $", '{mod.Rating2}', '{mod.Rating3}', '{mod.Rating4}'" +
-                                              $", '{mod.Rating5}', '{mod.Ratings}')");
+                await ExecuteModDbAsync(data: "INSERT INTO ModDb (Id, Downloads) " +
+                                              $"VALUES ('{mod.Id}', '{mod.Downloads}')");
             }
         }
     }

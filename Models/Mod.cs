@@ -9,12 +9,15 @@ public class Mod
 
     // Start at -1 so the first mirror is 0
     private static int _lastMirror = -1;
-    private const int MirrorType = 0;
+    private static int MirrorType { get; set; }
     private const int RoundRobin = 0;
     private const int Random = 1;
 
     public Mod()
     {
+        // Round Robin
+        MirrorType = 0;
+
         _downloadMirrors = new()
         {
             "https://mods.darknaught.com/",
@@ -46,24 +49,6 @@ public class Mod
 
     [JsonPropertyName("released")]
     public DateTime? Released { get; set; }
-
-    [JsonPropertyName("rating1")]
-    public int? Rating1 { get; set; }
-
-    [JsonPropertyName("rating2")]
-    public int? Rating2 { get; set; }
-
-    [JsonPropertyName("rating3")]
-    public int? Rating3 { get; set; }
-
-    [JsonPropertyName("rating4")]
-    public int? Rating4 { get; set; }
-
-    [JsonPropertyName("rating5")]
-    public int? Rating5 { get; set; }
-
-    [JsonPropertyName("ratings")]
-    public int? Ratings { get; set; }
 
     [JsonPropertyName("archive")]
     public string? Archive { get; set; }
@@ -98,19 +83,17 @@ public class Mod
 
     public static string GetAvailableMirror()
     {
-        if (MirrorType == RoundRobin)
+        switch (MirrorType)
         {
-            if (_lastMirror >= _downloadMirrors!.Count - 1) _lastMirror = -1;
-            int nextMirror = _lastMirror += 1;
-            return _downloadMirrors[nextMirror];
+            case RoundRobin:
+                if (_lastMirror >= _downloadMirrors!.Count - 1) _lastMirror = -1;
+                int nextMirror = _lastMirror += 1;
+                return _downloadMirrors[nextMirror];
+            case Random:
+                return _downloadMirrors![new Random().Next(_downloadMirrors.Count)];
         }
 
-#pragma warning disable CS0162 // Unreachable code detected
-        if (MirrorType == Random)
-        {
-            return _downloadMirrors![new Random().Next(_downloadMirrors.Count)];
-        }
-#pragma warning restore CS0162 // Unreachable code detected
+        return _downloadMirrors![0];
     }
 }
 
