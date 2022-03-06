@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Drawing;
 using Serilog;
 using SQLite;
 
@@ -16,6 +17,7 @@ public static class DatabaseConnection
         await ImportData();
 
         Log.Logger.Information(messageTemplate: "SQLite Database Initialized.");
+        Log.Logger.Information(messageTemplate: "API is ready for requests.");
     }
 
     public static async Task<List<ModDb>?> ExecuteModDbAsync(string data)

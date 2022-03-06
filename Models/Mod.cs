@@ -20,9 +20,9 @@ public class Mod
 
         _downloadMirrors = new()
         {
-            "https://mods.darknaught.com/",
-            "https://mods.swgemu.com/",
-            "https://mods.swglegacy.com/"
+            "http://login.darknaught.com:8080/mods/",
+            //"https://mods.swgemu.com/",
+            //"https://mods.swglegacy.com/"
         };
     }
 
@@ -31,6 +31,9 @@ public class Mod
 
     [JsonPropertyName("name")]
     public string? Name { get; set; }
+
+    [JsonPropertyName("bannerUrl")]
+    public string? BannerUrl { get; set; }
 
     [JsonPropertyName("description")]
     public string? Description { get; set; }
@@ -95,14 +98,6 @@ public class Mod
 
         return _downloadMirrors![0];
     }
-}
-
-public class RatingRequestResponse
-{
-    [JsonPropertyName("result")]
-    public string? Result { get; set; }
-    [JsonPropertyName("reason")]
-    public string? Reason { get; set; }
 }
 
 public class InstallRequestResponse

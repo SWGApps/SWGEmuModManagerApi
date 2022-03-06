@@ -1,5 +1,5 @@
 using Serilog;
-using Serilog.Context;
+using Serilog.Sinks.SystemConsole.Themes;
 using SWGEmuModManagerApi.Models;
 
 try
@@ -7,7 +7,7 @@ try
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Host.UseSerilog(configureLogger: (hostBuilderContext, loggerConfiguration) => loggerConfiguration
-        .WriteTo.Console()
+        .WriteTo.Console(theme: AnsiConsoleTheme.Literate)
         .ReadFrom.Configuration(hostBuilderContext.Configuration));
 
     builder.Services.AddControllers();
