@@ -44,11 +44,14 @@ public class Mod
     [JsonPropertyName("version")]
     public string? Version { get; set; }
 
+    [JsonPropertyName("source")]
+    public string? Source { get; set; }
+
     [JsonPropertyName("size")]
     public ulong? Size { get; set; }
 
     [JsonPropertyName("downloads")]
-    public ulong? Downloads { get; set; }
+    public int? Downloads { get; set; }
 
     [JsonPropertyName("released")]
     public DateTime? Released { get; set; }
@@ -78,6 +81,11 @@ public class Mod
         List<Mod>? mods = new();
 
         await Task.Run(() => { mods = JsonSerializer.Deserialize<List<Mod>>(File.ReadAllText("mods.json")); });
+
+        foreach (Mod mod in mods)
+        {
+            mod.Downloads = await DatabaseConnection.GetDownloads(mod.Id);
+        }
 
         if (mods is null)  return new List<Mod>();
             

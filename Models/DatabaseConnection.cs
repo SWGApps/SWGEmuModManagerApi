@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Drawing;
 using Serilog;
 using SQLite;
 
@@ -65,5 +64,17 @@ public static class DatabaseConnection
                                               $"VALUES ('{mod.Id}', '{mod.Downloads}')");
             }
         }
+    }
+
+    public static async Task<int?> GetDownloads(int? id)
+    {
+        if (_connection is null || !File.Exists(path: "ModDb.db")) return 0;
+
+        List<ModDb> modDbData = await ExecuteModDbAsync(
+            data: $"SELECT Downloads FROM ModDb WHERE Id = '{id}'") ?? new List<ModDb>();
+
+        if (modDbData.Count > 0) return modDbData[0].Downloads;
+        
+        return 0;
     }
 }
