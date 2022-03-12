@@ -77,10 +77,7 @@ public class DatabaseConnection
 
     public async void Dispose()
     {
-        if (_connection == null)
-        {
-            return;
-        }
+        if (_connection == null) return;
 
         await Task.Factory.StartNew(() =>
         {

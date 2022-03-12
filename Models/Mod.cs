@@ -91,8 +91,8 @@ public class Mod
 
         conn.Dispose();
 
-        if (mods is null)  return new List<Mod>();
-            
+        if (mods is null) return new List<Mod>();
+
         return mods;
     }
 
