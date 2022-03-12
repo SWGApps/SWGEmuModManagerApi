@@ -82,10 +82,14 @@ public class Mod
 
         await Task.Run(() => { mods = JsonSerializer.Deserialize<List<Mod>>(File.ReadAllText("mods.json")); });
 
+        DatabaseConnection conn = new();
+
         foreach (Mod mod in mods)
         {
-            mod.Downloads = await DatabaseConnection.GetDownloads(mod.Id);
+            mod.Downloads = await conn.GetDownloads(mod.Id);
         }
+
+        conn.Dispose();
 
         if (mods is null)  return new List<Mod>();
             

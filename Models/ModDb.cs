@@ -9,7 +9,8 @@ public class ModDb
 
     public static async Task AddDownload(int id)
     {
-        List<ModDb>? modData = await DatabaseConnection.ExecuteModDbAsync(data: 
+        DatabaseConnection conn = new();
+        List<ModDb>? modData = await conn.ExecuteModDbAsync(data: 
             $"SELECT Downloads FROM ModDb where Id = '{id}'");
 
         if (modData is not null && modData.Count > 0)
@@ -18,9 +19,11 @@ public class ModDb
 
             if (downloads is not null)
             {
-                await DatabaseConnection.ExecuteModDbAsync(data: 
+                await conn.ExecuteModDbAsync(data: 
                     $"UPDATE ModDb SET Downloads = '{downloads}' WHERE Id = '{id}'");
             }
         }
+
+        conn.Dispose();
     }
 }

@@ -1,14 +1,13 @@
-﻿using System.Diagnostics;
-using Serilog;
+﻿using Serilog;
 using SQLite;
 
 namespace SWGEmuModManagerApi.Models;
 
-public static class DatabaseConnection
+public class DatabaseConnection
 {
-    private static SQLiteAsyncConnection? _connection;
+    private SQLiteAsyncConnection? _connection;
 
-    public static async Task Initialize()
+    public async Task Initialize()
     {
         _connection = new(databasePath: "ModDb.db");
 
@@ -19,14 +18,12 @@ public static class DatabaseConnection
         Log.Logger.Information(messageTemplate: "API is ready for requests.");
     }
 
-    public static async Task<List<ModDb>?> ExecuteModDbAsync(string data)
+    public async Task<List<ModDb>?> ExecuteModDbAsync(string data)
     {
         try
         {
             if (_connection is null) return null;
 
-            Trace.WriteLine(data);
-            
             List<ModDb> results = await _connection.QueryAsync<ModDb>(data);
 
             await _connection.CloseAsync();
@@ -41,14 +38,14 @@ public static class DatabaseConnection
         return new List<ModDb>();
     }
 
-    private static async Task CreateTables()
+    private async Task CreateTables()
     {
         if (_connection is null || File.Exists("ModDb.db")) return;
 
         await _connection.CreateTableAsync<ModDb>();
     }
 
-    private static async Task ImportData()
+    private async Task ImportData()
     {
         if (_connection is null || !File.Exists(path: "ModDb.db")) return;
 
@@ -66,7 +63,7 @@ public static class DatabaseConnection
         }
     }
 
-    public static async Task<int?> GetDownloads(int? id)
+    public async Task<int?> GetDownloads(int? id)
     {
         if (_connection is null || !File.Exists(path: "ModDb.db")) return 0;
 
@@ -76,5 +73,23 @@ public static class DatabaseConnection
         if (modDbData.Count > 0) return modDbData[0].Downloads;
         
         return 0;
+    }
+
+    public async void Dispose()
+    {
+        if (_connection == null)
+        {
+            return;
+        }
+
+        await Task.Factory.StartNew(() =>
+        {
+            _connection.GetConnection().Close();
+            _connection.GetConnection().Dispose();
+            _connection = null;
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+        });
     }
 }

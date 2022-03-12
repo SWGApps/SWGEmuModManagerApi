@@ -59,5 +59,5 @@ finally
 
 void OnStarted()
 {
-    DatabaseConnection.Initialize().Wait();
+    new DatabaseConnection().Initialize().Wait();
 }
