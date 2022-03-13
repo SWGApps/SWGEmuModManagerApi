@@ -1,1 +1,2 @@
+cd ..
 dotnet run
