@@ -53,23 +53,25 @@ public class ModInfo
         Log.Logger.Information("API ready for requests.");
     }
 
-    public static async Task AddDownload(int id)
+    public static async Task<bool> AddDownload(int id)
     {
-        if (!File.Exists(path: "ModInfo.db")) return;
+        if (!File.Exists(path: "ModInfo.db")) return false;
 
         using ModInfoContext db = new();
 
         ModInfo? mod = await db.ModInfo!
             .SingleOrDefaultAsync(x => x.Id == id);
 
-        if (mod is null) return;
+        if (mod is null) return false;
 
         mod.Downloads += 1;
 
         await db.SaveChangesAsync();
+
+        return true;
     }
 
-    public async Task<int?> GetDownloads(int? id)
+    public static async Task<int?> GetDownloads(int? id)
     {
         if (!File.Exists(path: "ModInfo.db")) return 0;
 
