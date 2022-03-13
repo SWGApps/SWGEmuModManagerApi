@@ -27,7 +27,7 @@ public class ModController : ControllerBase
             };
         }
 
-        await ModDb.AddDownload(id);
+        await ModInfo.AddDownload(id);
 
         return new InstallRequestResponse()
         {

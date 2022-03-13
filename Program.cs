@@ -57,7 +57,7 @@ finally
     Log.CloseAndFlush();
 }
 
-void OnStarted()
+async void OnStarted()
 {
-    new DatabaseConnection().Initialize().Wait();
+    await Task.Run(ModInfo.InitializeDatabase);
 }
