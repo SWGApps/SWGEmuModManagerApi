@@ -8,10 +8,10 @@ namespace SWGEmuModManagerApi.Controllers;
 [Route("[controller]")]
 public class ModsController : ControllerBase
 {
-    [HttpGet("/Mods/{inputPageNumber}/{inputPageSize}/{filterType}/{filterValue}/{sortValue}")]
-    public async Task<IActionResult> Get(int inputPageNumber, int inputPageSize, int filterType, int filterOrder, string sortValue)
+    [HttpGet("/Mods/{inputPageNumber}/{inputPageSize}/{sortType}/{sortOrder}/{filterValue}")]
+    public async Task<IActionResult> Get(int inputPageNumber, int inputPageSize, int sortType, int sortOrder, string filterValue)
     {
-        IEnumerable<Mod> mods = await Mod.GetMods(filterType, filterOrder, sortValue);
+        IEnumerable<Mod> mods = await Mod.GetMods(sortType, sortOrder, filterValue);
         IPagedList<Mod> modList = mods.ToPagedList(inputPageNumber, inputPageSize);
 
         return Ok(new PaginatedResponse<IPagedList<Mod>>(
