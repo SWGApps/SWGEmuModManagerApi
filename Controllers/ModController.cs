@@ -4,7 +4,7 @@ using SWGEmuModManagerApi.Models;
 namespace SWGEmuModManagerApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route(template: "[controller]")]
 public class ModController : ControllerBase
 {
     [HttpGet(template: "{id}")]

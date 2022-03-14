@@ -1,7 +1,16 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Serilog;
 
 namespace SWGEmuModManagerApi.Models;
+enum FilterType
+{
+    Name,
+    Author,
+    Version,
+    Downloads,
+    Released
+}
 
 public class Mod
 {
@@ -76,15 +85,51 @@ public class Mod
         return mods.FirstOrDefault(mod => mod.Id == id)!;
     }
 
-    public static async Task<List<Mod>> GetMods()
+    public static async Task<List<Mod>> GetMods(int filterType, int filterOrder, string sortValue)
     {
         List<Mod>? mods = new();
 
         await Task.Run(() => { mods = JsonSerializer.Deserialize<List<Mod>>(File.ReadAllText("mods.json")); });
 
+        if (mods is null) return new List<Mod>();
+
+        if (sortValue != "null") mods = mods.Where(x => x.Name!.Contains(sortValue)).ToList();
+
         mods.ForEach(async mod => mod.Downloads = await ModInfo.GetDownloads(mod.Id));
 
-        if (mods is null) return new List<Mod>();
+        return await GetModOrder(filterType, filterOrder, mods);
+    }
+
+    public static async Task<List<Mod>> GetModOrder(int filterType, int filterOrder, List<Mod> mods)
+    {
+        await Task.Run(() =>
+        {
+            switch (filterType)
+            {
+                case (int)FilterType.Name:
+                    if (filterOrder == 0) return mods.OrderBy(x => x.Name).ToList(); // Ascending
+                    if (filterOrder == 1) return mods.OrderByDescending(x => x.Name).ToList(); // Descending
+                    return mods.OrderBy(x => x.Name).ToList(); // Ascending
+                case (int)FilterType.Author:
+                    if (filterOrder == 0) return mods.OrderBy(x => x.Author).ToList(); // Ascending
+                    if (filterOrder == 1) return mods.OrderByDescending(x => x.Author).ToList(); // Descending
+                    return mods.OrderBy(x => x.Author).ToList(); // Ascending
+                case (int)FilterType.Version:
+                    if (filterOrder == 0) return mods.OrderBy(x => x.Version).ToList(); // Ascending
+                    if (filterOrder == 1) return mods.OrderByDescending(x => x.Version).ToList(); // Descending
+                    return mods.OrderBy(x => x.Version).ToList(); // Ascending
+                case (int)FilterType.Downloads:
+                    if (filterOrder == 0) return mods.OrderBy(x => x.Downloads).ToList(); // Ascending
+                    if (filterOrder == 1) return mods.OrderByDescending(x => x.Downloads).ToList(); // Descending
+                    return mods.OrderBy(x => x.Downloads).ToList(); // Ascending
+                case (int)FilterType.Released:
+                    if (filterOrder == 0) return mods.OrderBy(x => x.Released).ToList(); // Ascending
+                    if (filterOrder == 1) return mods.OrderByDescending(x => x.Released).ToList(); // Descending
+                    return mods.OrderBy(x => x.Released).ToList(); // Ascending
+                default:
+                    return mods;
+            }
+        });
 
         return mods;
     }
