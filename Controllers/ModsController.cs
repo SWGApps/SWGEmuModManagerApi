@@ -13,15 +13,16 @@ public class ModsController : ControllerBase
     {
         IEnumerable<Mod> mods = await Mod.GetMods(sortType, sortOrder, filterValue);
 
-        switch (inputPageSize)
+        inputPageSize = inputPageSize switch
         {
-            case 0: inputPageSize = 10; break;
-            case 1: inputPageSize = 20; break;
-            case 2: inputPageSize = 30; break;
-            case 3: inputPageSize = 40; break;
-            case 4: inputPageSize = 50; break;
-            default: inputPageSize = 10; break;
-        }
+            0 => 10,
+            1 => 20,
+            2 => 30,
+            3 => 40,
+            4 => 50,
+            5 => 999999,
+            _ => 10,
+        };
 
         IPagedList<Mod> modList = mods.ToPagedList(inputPageNumber, inputPageSize);
 
@@ -37,5 +38,36 @@ public class ModsController : ControllerBase
             modList.FirstItemOnPage, 
             modList.HasPreviousPage, 
             modList.HasNextPage));
+    }
+
+    [HttpGet("/Mods/FileList/{ids}")]
+    public async Task<IActionResult> FileList(string ids)
+    {
+        List<int> modIDs = new();
+
+        List<string> tempIDs = ids.Split(separator: '-').ToList();
+
+        tempIDs.ForEach(id =>
+        {
+            modIDs.Add(item: Convert.ToInt32(id));
+        });
+
+        List<Mod> mods = await Mod.GetMods
+            (sortType: 0, sortOrder: 0, filterValue: "null");
+
+        Dictionary<int, List<string>> retData = new();
+
+        mods.ToList().ForEach(mod =>
+        {
+            modIDs.ForEach(modId =>
+            {
+                if (mod.Id == modId)
+                {
+                    retData.Add(modId, mod.FileList!);
+                }
+            });
+        });
+
+        return Ok(new Response<Dictionary<int, List<string>>>(retData));
     }
 }
